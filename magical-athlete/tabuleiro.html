@@ -279,6 +279,13 @@
     padding: 8px 10px; background: var(--cell); border-radius: 8px;
   }
   #dice-stats strong { color: var(--text); }
+  #turn-order {
+    font-size: 11.5px; color: var(--muted); text-align: left;
+    margin: 0 0 10px; padding: 8px 10px; background: var(--cell);
+    border-radius: 8px; display: none; line-height: 1.4;
+  }
+  #turn-order.visible { display: block; }
+  #turn-order strong { color: var(--text); }
   #reset-btn {
     background: transparent; color: var(--muted); border: 1px solid var(--line);
     width: 100%; margin-top: 10px; font-weight: 600;
@@ -504,7 +511,9 @@
       <div id="dice-stats">
         <span>🎲 Rolagens: <strong id="roll-count">0</strong></span>
         <span>⏱️ <strong id="elapsed-time">00:00</strong></span>
+        <span>🤕 Quedas: <strong id="trip-count">0</strong></span>
       </div>
+      <div id="turn-order"></div>
       <button id="reset-btn">↺ Resetar jogo</button>
     </div>
 
@@ -749,6 +758,7 @@ function makeToken(char) {
   t.className = 'token';
   t.style.background = colorFor(char.name);
   t.draggable = false;
+  t.dataset.name = char.name;
 
   const label = document.createElement('span');
   label.textContent = char.name;
@@ -762,7 +772,11 @@ function makeToken(char) {
   flag.addEventListener('pointerdown', e => e.stopPropagation()); // não deixa o drag começar
   flag.addEventListener('click', e => {
     e.stopPropagation();
-    t.classList.toggle('tripped');
+    const nowTripped = t.classList.toggle('tripped');
+    if (nowTripped) {
+      tripCount++;
+      tripCountEl.textContent = tripCount;
+    }
   });
   t.appendChild(flag);
 
@@ -793,14 +807,48 @@ function containerAt(clientX, clientY) {
   return wrapper ? wrapper.querySelector('.dropzone') : null;
 }
 
+// ---------- clique duplo / toque duplo -> manda o personagem pra Casa 0 ----------
+let lastClickToken = null;
+let lastClickTime = 0;
+const DOUBLE_CLICK_MS = 400;
+const DRAG_THRESHOLD_PX = 5;
+
+function sendTokenToStart(token) {
+  cellTokenContainers[0].appendChild(token);
+}
+
+// posição original do token no início do gesto (pra devolver exatamente ali
+// se o gesto acabar sendo só um clique/toque, sem arraste de verdade)
+let dragStartParent = null;
+let dragStartNextSibling = null;
+let dragStartClientX = 0, dragStartClientY = 0;
+let dragMoved = false;
+
 function onPointerDown(e) {
   const token = e.target.closest('.token');
   if (!token) return;
   e.preventDefault();
 
+  const now = Date.now();
+  if (lastClickToken === token && (now - lastClickTime) < DOUBLE_CLICK_MS) {
+    // clique/toque duplo: manda direto pra Casa 0 e não inicia o arraste
+    lastClickToken = null;
+    lastClickTime = 0;
+    sendTokenToStart(token);
+    return;
+  }
+  lastClickToken = token;
+  lastClickTime = now;
+
   const rect = token.getBoundingClientRect();
   dragOffsetX = e.clientX - rect.left;
   dragOffsetY = e.clientY - rect.top;
+
+  dragStartParent = token.parentNode;
+  dragStartNextSibling = token.nextSibling;
+  dragStartClientX = e.clientX;
+  dragStartClientY = e.clientY;
+  dragMoved = false;
 
   dragEl = token;
   dragEl.setPointerCapture(e.pointerId);
@@ -816,6 +864,10 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
   if (!dragEl) return;
+  if (!dragMoved) {
+    const dx = e.clientX - dragStartClientX, dy = e.clientY - dragStartClientY;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) dragMoved = true;
+  }
   dragEl.style.left = (e.clientX - dragOffsetX) + 'px';
   dragEl.style.top = (e.clientY - dragOffsetY) + 'px';
 
@@ -832,16 +884,23 @@ function onPointerUp(e) {
 
   if (currentHoverContainer) currentHoverContainer.classList.remove('drop-hover');
 
-  let target = containerAt(e.clientX, e.clientY);
-  if (!target) target = bench; // solta fora do tabuleiro/banco -> volta pro banco
-
   dragEl.classList.remove('dragging');
   dragEl.style.position = '';
   dragEl.style.left = '';
   dragEl.style.top = '';
   dragEl.style.width = '';
 
-  target.appendChild(dragEl);
+  if (!dragMoved) {
+    // não houve arraste de verdade (foi só um clique/toque) — devolve o
+    // token exatamente pra onde ele estava, sem reordenar o container
+    if (dragStartNextSibling) dragStartParent.insertBefore(dragEl, dragStartNextSibling);
+    else dragStartParent.appendChild(dragEl);
+  } else {
+    let target = containerAt(e.clientX, e.clientY);
+    if (!target) target = bench; // solta fora do tabuleiro/banco -> volta pro banco
+    target.appendChild(dragEl);
+  }
+
   dragEl = null;
   currentHoverContainer = null;
 }
@@ -860,6 +919,28 @@ const elapsedEl = document.getElementById('elapsed-time');
 let rollCount = 0;
 let matchStartTime = null;
 let timerInterval = null;
+
+// ---------- contador de quedas (tripped) ----------
+const tripCountEl = document.getElementById('trip-count');
+let tripCount = 0;
+
+// ---------- ordem do turno (capturada na primeira rolagem) ----------
+const turnOrderEl = document.getElementById('turn-order');
+let turnOrderCaptured = false;
+
+function captureTurnOrderIfNeeded() {
+  if (turnOrderCaptured) return;
+  turnOrderCaptured = true;
+  const tokensAtStart = Array.from(cellTokenContainers[0].children)
+    .filter(el => el.classList.contains('token'));
+  if (!tokensAtStart.length) {
+    turnOrderEl.textContent = 'Ordem do turno: nenhum personagem estava na Casa 0 na primeira rolagem.';
+  } else {
+    const names = tokensAtStart.map((t, i) => `${i + 1}º ${t.dataset.name}`);
+    turnOrderEl.innerHTML = '<strong>Ordem do turno</strong> (Casa 0 na 1ª rolagem): ' + names.join(' · ');
+  }
+  turnOrderEl.classList.add('visible');
+}
 
 function formatElapsed(ms) {
   const totalSec = Math.floor(ms / 1000);
@@ -888,6 +969,7 @@ function stopAndResetTimer() {
 rollBtn.addEventListener('click', () => {
   dieEl.classList.add('rolling');
   startTimerIfNeeded();
+  captureTurnOrderIfNeeded();
   let ticks = 0;
   const spin = setInterval(() => {
     dieEl.textContent = 1 + Math.floor(Math.random() * 6);
@@ -918,6 +1000,11 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   rollCount = 0;
   rollCountEl.textContent = '0';
   stopAndResetTimer();
+  tripCount = 0;
+  tripCountEl.textContent = '0';
+  turnOrderCaptured = false;
+  turnOrderEl.classList.remove('visible');
+  turnOrderEl.textContent = '';
 
   // zera as fichas de todo mundo e devolve tudo pro banco compartilhado
   CHIP_TYPES.forEach(c => chipBank[c.key] = c.total);
