@@ -273,6 +273,12 @@
   #roll-btn { background: var(--accent); color: #fff; width: 100%; }
   #roll-btn:active { filter: brightness(0.92); }
   #history { font-size: 11.5px; color: var(--muted); margin-top: 8px; min-height: 16px; }
+  #dice-stats {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: 11.5px; color: var(--muted); margin: 10px 0;
+    padding: 8px 10px; background: var(--cell); border-radius: 8px;
+  }
+  #dice-stats strong { color: var(--text); }
   #reset-btn {
     background: transparent; color: var(--muted); border: 1px solid var(--line);
     width: 100%; margin-top: 10px; font-weight: 600;
@@ -284,7 +290,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Magical Athlete — Tabuleiro Jogável (solo)</h1>
+  <h1>Magical Athlete — Tabuleiro Jogável</h1>
   <p class="lede">
     Arraste as fichas de personagem do banco (ou de uma casa para outra) pelo tabuleiro.
     Passe o mouse (ou segure no celular) sobre uma ficha pra ver o texto oficial do poder —
@@ -495,6 +501,10 @@
       <div id="die">–</div>
       <button id="roll-btn">🎲 Rolar dado</button>
       <div id="history"></div>
+      <div id="dice-stats">
+        <span>🎲 Rolagens: <strong id="roll-count">0</strong></span>
+        <span>⏱️ <strong id="elapsed-time">00:00</strong></span>
+      </div>
       <button id="reset-btn">↺ Resetar jogo</button>
     </div>
 
@@ -844,8 +854,40 @@ const rollBtn = document.getElementById('roll-btn');
 const historyEl = document.getElementById('history');
 let rollHistory = [];
 
+// ---------- contador de rolagens + cronômetro ----------
+const rollCountEl = document.getElementById('roll-count');
+const elapsedEl = document.getElementById('elapsed-time');
+let rollCount = 0;
+let matchStartTime = null;
+let timerInterval = null;
+
+function formatElapsed(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const s = String(totalSec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function startTimerIfNeeded() {
+  if (timerInterval) return;
+  matchStartTime = Date.now();
+  timerInterval = setInterval(() => {
+    elapsedEl.textContent = formatElapsed(Date.now() - matchStartTime);
+  }, 500);
+}
+
+function stopAndResetTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  matchStartTime = null;
+  elapsedEl.textContent = '00:00';
+}
+
 rollBtn.addEventListener('click', () => {
   dieEl.classList.add('rolling');
+  startTimerIfNeeded();
   let ticks = 0;
   const spin = setInterval(() => {
     dieEl.textContent = 1 + Math.floor(Math.random() * 6);
@@ -858,6 +900,8 @@ rollBtn.addEventListener('click', () => {
       rollHistory.unshift(result);
       rollHistory = rollHistory.slice(0, 12);
       historyEl.textContent = 'Últimas: ' + rollHistory.join(', ');
+      rollCount++;
+      rollCountEl.textContent = rollCount;
     }
   }, 60);
 });
@@ -871,6 +915,9 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   rollHistory = [];
   historyEl.textContent = '';
   dieEl.textContent = '–';
+  rollCount = 0;
+  rollCountEl.textContent = '0';
+  stopAndResetTimer();
 
   // zera as fichas de todo mundo e devolve tudo pro banco compartilhado
   CHIP_TYPES.forEach(c => chipBank[c.key] = c.total);
