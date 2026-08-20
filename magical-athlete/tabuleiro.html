@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Magical Athlete — Tabuleiro Jogável</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0PN62NDS7K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-0PN62NDS7K');
+</script>
 <meta name="description" content="Apoio digital gratuito e sem instalação para partidas físicas de Magical Athlete: arraste fichas de personagem, role o dado, controle fichas de pontuação por jogador e consulte as regras completas em português, direto do navegador.">
 <meta name="theme-color" content="#B23A2E">
 <meta property="og:type" content="website">
@@ -38,17 +47,18 @@
   .layout {
     display: grid; gap: 18px; align-items: start;
     grid-template-columns: 1fr 300px;
-    grid-template-areas: "board dice" "hands bench" "legend legend";
+    grid-template-areas: "board dice" "hands bench" "hands finished" "legend legend";
   }
   #board-panel { grid-area: board; }
   #dice-panel { grid-area: dice; }
   #hand-panel { grid-area: hands; margin-top: 0 !important; }
   #bench-panel { grid-area: bench; margin-top: 0 !important; }
+  #finished-panel { grid-area: finished; margin-top: 0 !important; }
   .legend { grid-area: legend; }
   @media (max-width: 880px) {
     .layout {
       grid-template-columns: 1fr;
-      grid-template-areas: "board" "dice" "hands" "bench" "legend";
+      grid-template-areas: "board" "dice" "hands" "bench" "finished" "legend";
     }
   }
 
@@ -140,12 +150,16 @@
   #mode-toggle-btn.is-wild { background: var(--accent); }
 
   /* ---- Banco de personagens ---- */
-  #bench-panel h2, #dice-panel h2 { font-size: 14px; margin: 0 0 6px; }
-  #bench-panel p.sub, #dice-panel p.sub { font-size: 11.5px; color: var(--muted); margin: 0 0 10px; }
-  #bench {
+  #bench-panel h2, #dice-panel h2, #finished-panel h2 { font-size: 14px; margin: 0 0 6px; }
+  #bench-panel p.sub, #dice-panel p.sub, #finished-panel p.sub { font-size: 11.5px; color: var(--muted); margin: 0 0 10px; }
+  #bench, #finished-bench {
     display: flex; flex-wrap: wrap; gap: 5px;
     max-height: 46vh; overflow-y: auto; padding: 2px;
     touch-action: none;
+  }
+  #finished-bench {
+    min-height: 34px;
+    border: 1px dashed var(--line); border-radius: 8px;
   }
 
   /* ---- Fichas (tokens) ---- */
@@ -291,6 +305,11 @@
     width: 100%; margin-top: 10px; font-weight: 600;
   }
   #reset-btn:hover { background: #F0ECE0; }
+  #restart-race-btn {
+    background: transparent; color: var(--accent2); border: 1px solid var(--accent2);
+    width: 100%; margin-top: 8px; font-weight: 600;
+  }
+  #restart-race-btn:hover { background: #EAF2F8; }
 
   .legend { font-size: 11px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
 </style>
@@ -515,6 +534,7 @@
       </div>
       <div id="turn-order"></div>
       <button id="reset-btn">↺ Resetar jogo</button>
+      <button id="restart-race-btn">🏁 Reiniciar corrida</button>
     </div>
 
     <div class="panel" id="hand-panel">
@@ -534,6 +554,15 @@
       <div id="bench"></div>
       <button id="random-start-btn">🎲 Personagem aleatório → Casa 0</button>
       <div id="random-start-msg"></div>
+    </div>
+
+    <div class="panel" id="finished-panel">
+      <h2>Personagens que já correram</h2>
+      <p class="sub">
+        Preenchido automaticamente pelo botão "Reiniciar corrida", com quem estava no
+        tabuleiro. Arraste de volta se precisar corrigir algo.
+      </p>
+      <div id="finished-bench"></div>
     </div>
 
     <div class="legend">
@@ -752,6 +781,9 @@ refreshChipButtons();
 // ---------- monta o banco + as fichas ----------
 const bench = document.getElementById('bench');
 bench.classList.add('dropzone');
+
+const finishedBench = document.getElementById('finished-bench');
+finishedBench.classList.add('dropzone');
 
 function makeToken(char) {
   const t = document.createElement('div');
@@ -989,11 +1021,9 @@ rollBtn.addEventListener('click', () => {
 });
 
 // ---------- reset ----------
-document.getElementById('reset-btn').addEventListener('click', () => {
-  document.querySelectorAll('.token').forEach(t => {
-    t.classList.remove('tripped');
-    bench.appendChild(t);
-  });
+// zera cronômetro, rolagens, histórico do dado, quedas e ordem do turno —
+// usado tanto pelo reset completo quanto pelo "reiniciar corrida"
+function resetRaceStats() {
   rollHistory = [];
   historyEl.textContent = '';
   dieEl.textContent = '–';
@@ -1005,6 +1035,14 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   turnOrderCaptured = false;
   turnOrderEl.classList.remove('visible');
   turnOrderEl.textContent = '';
+}
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  document.querySelectorAll('.token').forEach(t => {
+    t.classList.remove('tripped');
+    bench.appendChild(t);
+  });
+  resetRaceStats();
 
   // zera as fichas de todo mundo e devolve tudo pro banco compartilhado
   CHIP_TYPES.forEach(c => chipBank[c.key] = c.total);
@@ -1016,6 +1054,22 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   // volta o tabuleiro pro modo Mild Mile (suave)
   boardMode = 'suave';
   applyBoardMode();
+});
+
+// ---------- reiniciar corrida ----------
+// manda quem estava no tabuleiro pro banco de "já correram" (sem mexer nas
+// mãos dos jogadores, no banco geral, nas fichas de pontuação nem no modo
+// do tabuleiro) e zera as estatísticas da corrida (tempo, rolagens,
+// histórico do dado, quedas e ordem do turno)
+document.getElementById('restart-race-btn').addEventListener('click', () => {
+  cellTokenContainers.forEach(container => {
+    Array.from(container.children).forEach(t => {
+      if (!t.classList.contains('token')) return;
+      t.classList.remove('tripped');
+      finishedBench.appendChild(t);
+    });
+  });
+  resetRaceStats();
 });
 
 // ---------- personagem aleatório -> Casa 0 ----------
