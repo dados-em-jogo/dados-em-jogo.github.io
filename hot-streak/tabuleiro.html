@@ -1,0 +1,1175 @@
+<title>Mesa de Apostas Hot Streak</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EAE2C7; --surface:#FBF7E8; --surface-2:#F1E9CE; --surface-3:#E6DBB4;
+  --ink:#20291C; --ink-dim:#6b6850; --line:#C9BD98; --line-strong:#AFA179;
+  --accent:#C1791F; --accent-ink:#241705; --accent-soft:#E8CC9A;
+  --track:#2E6B4C; --track-ink:#EAF4EC; --track-2:#255A3F;
+  --good:#2E7D46; --danger:#B23B2E; --good-soft:#DCEEDF; --danger-soft:#F3DAD5;
+  --m-gluglu:#C23B34; --m-jibas:#2C5FA8; --m-brinco:#7B4FA0; --m-mona:#B03B84;
+  --m-gluglu-soft:#F1D6D3; --m-jibas-soft:#D3DFEF; --m-brinco-soft:#E2D6ED; --m-mona-soft:#EFD3E4;
+  --shadow: 0 1px 0 var(--line-strong), 0 6px 16px -10px rgba(30,25,10,.45);
+  --radius: 10px;
+  --font-display:'Oswald',"Arial Narrow",sans-serif;
+  --font-body:'IBM Plex Mono','Consolas',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10190F; --surface:#17251A; --surface-2:#1D2E21; --surface-3:#243828;
+    --ink:#ECE6D2; --ink-dim:#93A08E; --line:#2C4230; --line-strong:#3B5740;
+    --accent:#E3A83B; --accent-ink:#241705; --accent-soft:#4B3D1C;
+    --track:#173A26; --track-ink:#DCEFE0; --track-2:#122F1F;
+    --good:#4CAF6F; --danger:#E2564A; --good-soft:#1E3A26; --danger-soft:#3E2420;
+    --m-gluglu:#E2564A; --m-jibas:#5C93DE; --m-brinco:#A47AD1; --m-mona:#D964A8;
+    --m-gluglu-soft:#3A241F; --m-jibas-soft:#20293B; --m-brinco-soft:#2E2438; --m-mona-soft:#3A2432;
+    --shadow: 0 1px 0 rgba(0,0,0,.5), 0 10px 24px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10190F; --surface:#17251A; --surface-2:#1D2E21; --surface-3:#243828;
+  --ink:#ECE6D2; --ink-dim:#93A08E; --line:#2C4230; --line-strong:#3B5740;
+  --accent:#E3A83B; --accent-ink:#241705; --accent-soft:#4B3D1C;
+  --track:#173A26; --track-ink:#DCEFE0; --track-2:#122F1F;
+  --good:#4CAF6F; --danger:#E2564A; --good-soft:#1E3A26; --danger-soft:#3E2420;
+  --m-gluglu:#E2564A; --m-jibas:#5C93DE; --m-brinco:#A47AD1; --m-mona:#D964A8;
+  --m-gluglu-soft:#3A241F; --m-jibas-soft:#20293B; --m-brinco-soft:#2E2438; --m-mona-soft:#3A2432;
+  --shadow: 0 1px 0 rgba(0,0,0,.5), 0 10px 24px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:14px; line-height:1.5; padding:20px 20px 60px;
+}
+h1,h2,h3{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0;}
+::selection{background:var(--accent); color:var(--accent-ink);}
+a{color:var(--accent);}
+.wrap{max-width:1180px; margin:0 auto;}
+
+/* header */
+.masthead{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:22px;}
+.masthead .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:600;}
+.masthead h1{font-size:clamp(28px,4vw,42px); letter-spacing:.01em; text-transform:uppercase;}
+.masthead .sub{color:var(--ink-dim); font-size:12.5px; max-width:46ch;}
+.legend{display:flex; gap:10px; flex-wrap:wrap;}
+.support-banner{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius); padding:10px 14px; margin-bottom:16px;}
+.support-banner .support-text{font-size:12.5px; color:var(--ink-dim);}
+.support-banner .support-text strong{color:var(--ink);}
+.support-links{display:flex; gap:8px; flex-wrap:wrap;}
+.support-link{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; font-weight:600; font-size:12px; text-decoration:none; border:1px solid var(--line-strong); white-space:nowrap;}
+.support-link.buy{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+.support-link.buy:hover{filter:brightness(1.08);}
+.support-link.yt{background:var(--surface); color:var(--ink);}
+.support-link.yt:hover{background:var(--surface-3);}
+.support-banner .disclaimer{width:100%; font-size:10.5px; color:var(--ink-dim); opacity:.85;}
+.legend .chip{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:4px 10px 4px 6px;}
+.legend .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+
+/* generic panel */
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px; margin-bottom:18px;}
+.panel-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
+.panel-head h2{font-size:19px; text-transform:uppercase; letter-spacing:.02em;}
+.panel-head .hint{color:var(--ink-dim); font-size:12px;}
+.panel-head .hint#raceNumTag{font-size:19px; letter-spacing:.02em; color:var(--ink); font-weight:600;}
+.step-num{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--ink); color:var(--bg); font-size:12px; font-weight:700; margin-right:8px; font-family:var(--font-body);}
+
+button{font-family:var(--font-body); font-weight:600; cursor:pointer; border-radius:7px; border:1px solid var(--line-strong);}
+.btn{background:var(--surface-2); color:var(--ink); padding:9px 16px; font-size:13px;}
+.btn:hover{background:var(--surface-3);}
+.btn-primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent); padding:12px 22px; font-size:14.5px; letter-spacing:.02em;}
+.btn-primary:hover{filter:brightness(1.06);}
+.btn-primary:disabled, .btn:disabled{opacity:.45; cursor:not-allowed;}
+.btn-ghost{background:transparent; border-color:var(--line); color:var(--ink-dim); padding:4px 8px; font-size:11px;}
+.btn-ghost:hover{color:var(--ink); border-color:var(--line-strong);}
+select,input[type=number]{font-family:var(--font-body); font-weight:600; background:var(--surface-2); color:var(--ink); border:1px solid var(--line-strong); border-radius:7px; padding:8px 10px; font-size:14px;}
+
+/* setup */
+.setup-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+.setup-row label{font-size:12.5px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.04em;}
+.chk-row{display:flex; align-items:center; gap:8px; margin-top:12px; font-size:12.5px; color:var(--ink);}
+.chk-row input[type=checkbox]{width:16px; height:16px; accent-color:var(--accent);}
+select:disabled, input:disabled{opacity:.5; cursor:not-allowed;}
+
+/* ticket cards (open cards + palette) */
+.ticket-row{display:flex; flex-wrap:wrap; gap:10px;}
+.ticket{
+  position:relative; background:var(--surface-2); border:1px dashed var(--line-strong); border-radius:8px;
+  padding:8px 10px 9px; min-width:118px; font-size:11.5px;
+}
+.ticket .owner{display:flex; align-items:center; gap:6px; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.02em; margin-bottom:3px;}
+.ticket .owner .dot{width:8px; height:8px; border-radius:50%;}
+.ticket .kind{color:var(--ink-dim); line-height:1.3;}
+.ticket.fixed{opacity:.7;}
+.ticket-group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-dim); margin:10px 0 6px; font-weight:600;}
+.ticket-group-label:first-child{margin-top:0;}
+
+/* betting layout */
+.bet-layout{display:grid; grid-template-columns: 1.15fr 1fr; gap:18px;}
+@media (max-width: 880px){.bet-layout{grid-template-columns:1fr;}}
+.palette-card{
+  background:var(--surface-2); border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px;
+  cursor:grab; font-size:11.5px; user-select:none;
+}
+.palette-card:active{cursor:grabbing;}
+.palette-card .name{font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:6px; margin-bottom:2px;}
+.palette-card .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.palette-card .pay{color:var(--ink-dim); font-size:10.5px; font-variant-numeric:tabular-nums;}
+.palette-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:8px;}
+.palette-grid.single{grid-template-columns:1fr;}
+.palette-card .cap{font-size:10px; color:var(--ink-dim); margin-top:4px; font-variant-numeric:tabular-nums;}
+.palette-card .cap b{color:var(--ink);}
+.palette-card.full{opacity:.5;}
+.side-banner{display:flex; align-items:center; gap:10px; background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; padding:10px 14px; margin-top:12px; font-size:12.5px;}
+.side-banner .die{font-size:18px;}
+.side-banner b{font-family:var(--font-display); text-transform:uppercase; letter-spacing:.02em;}
+
+.slips{display:flex; flex-direction:column; gap:10px;}
+.slip{
+  border:1px solid var(--line-strong); border-radius:8px; background:var(--surface-2);
+  padding:8px 10px; position:relative;
+}
+.slip .slip-label{font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim); font-weight:700; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.slip .saldo-chip{font-family:var(--font-display); font-size:12px; font-weight:600; color:var(--accent); text-transform:none; letter-spacing:0;}
+.slip .empty-hint{color:var(--ink-dim); font-size:11.5px; font-style:normal;}
+.slip-slots{display:flex; flex-direction:column; gap:6px;}
+.slip-body{border:1px dashed var(--line-strong); border-radius:6px; min-height:44px; padding:6px 8px; background:var(--surface); display:flex; align-items:center;}
+.slip-body.dragover{outline:2px solid var(--accent); outline-offset:1px; background:var(--accent-soft);}
+.bet-card{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:6px 8px; width:100%;}
+.bet-card .bc-main{display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;}
+.bet-card .bc-title{display:flex; align-items:center; gap:6px; font-weight:700; font-size:12.5px;}
+.bet-card .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.bet-card .bc-controls{display:flex; gap:5px; flex-wrap:wrap;}
+.toggle{display:flex; border:1px solid var(--line-strong); border-radius:6px; overflow:hidden; font-size:10.5px;}
+.toggle button{border:none; border-radius:0; background:var(--surface-2); color:var(--ink-dim); padding:3px 8px; font-weight:700;}
+.toggle button.active{background:var(--ink); color:var(--bg);}
+.tier-badge{font-size:10px; font-weight:700; padding:2px 6px; border-radius:999px; background:var(--accent-soft); color:var(--accent); white-space:nowrap;}
+.tier-badge.full{background:var(--danger-soft); color:var(--danger);}
+.remove-x{background:transparent; border:none; color:var(--ink-dim); font-size:16px; line-height:1; padding:2px 4px;}
+.remove-x:hover{color:var(--danger);}
+
+/* race controls */
+.race-controls{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px;}
+.readout{display:flex; gap:16px; font-size:11.5px; color:var(--ink-dim);}
+.readout b{color:var(--ink); font-variant-numeric:tabular-nums;}
+
+/* track */
+.track-scroll{overflow-x:auto; border-radius:8px; border:1px solid var(--line-strong); padding:2px;}
+.track-wrap{position:relative; width:834px;}
+.track{
+  display:grid; grid-template-columns: 78px repeat(14, 54px); grid-auto-rows:28px 44px 44px 44px 44px;
+  background:var(--track); color:var(--track-ink); font-family:var(--font-body);
+}
+.track .hcell{display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:10px; font-weight:700; border-left:1px solid rgba(255,255,255,.08); background:var(--track-2);}
+.track .hcell.star{color:var(--accent);}
+.track .hcell .startflag{font-size:9px; color:var(--accent); font-weight:700; letter-spacing:.03em;}
+.track .fold-line{border-left:2px dashed rgba(255,255,255,.55);}
+.track .lane-label{display:flex; align-items:center; gap:7px; padding:0 8px; font-size:11.5px; font-weight:700; border-top:1px solid rgba(255,255,255,.08); border-left:none;}
+.track .lane-label .dot{width:10px; height:10px; border-radius:50%; flex:none; border:2px solid rgba(255,255,255,.5);}
+.track .cell{border-top:1px solid rgba(255,255,255,.08); border-left:1px solid rgba(255,255,255,.08);}
+.token-layer{position:absolute; left:78px; top:28px; width:756px; height:176px; pointer-events:none;}
+.token{
+  position:absolute; top:0; left:0; transform:translate(-50%,-50%); width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff;
+  border:2px solid rgba(255,255,255,.75); box-shadow:0 2px 6px rgba(0,0,0,.35);
+  transition: left .5s cubic-bezier(.3,.7,.4,1), top .35s ease, box-shadow .15s;
+}
+.token.fallen{opacity:.55; border-style:dashed;}
+.token.reversed::after{content:"⤾"; position:absolute; top:-9px; right:-6px; font-size:11px; background:var(--bg); color:var(--ink); border-radius:50%; width:15px; height:15px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line-strong);}
+.token.dq{opacity:.28; filter:grayscale(1);}
+.token.finished{box-shadow:0 0 0 3px var(--accent), 0 2px 6px rgba(0,0,0,.35);}
+.token.pulse{animation:pulse .5s ease;}
+@keyframes pulse{0%{transform:translate(-50%,-50%) scale(1.45);} 100%{transform:translate(-50%,-50%) scale(1);}}
+@media (prefers-reduced-motion: reduce){ .token{transition:none;} .token.pulse{animation:none;} }
+
+/* log */
+.log{background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px 12px; max-height:220px; overflow-y:auto; font-size:12px; display:flex; flex-direction:column-reverse; gap:4px;}
+.log .entry{border-bottom:1px dotted var(--line); padding-bottom:4px;}
+.log .entry:first-child{border-bottom:none; padding-bottom:0;}
+.log .entry.card{color:var(--ink-dim); font-weight:700;}
+.log .entry.finish{color:var(--good); font-weight:700;}
+.log .entry.dq{color:var(--danger); font-weight:700;}
+.log .entry.fold{color:var(--accent); font-weight:700;}
+
+/* results */
+.standings{width:100%; border-collapse:collapse; font-size:13px;}
+.standings th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-dim); padding:4px 8px; border-bottom:1px solid var(--line-strong);}
+.standings td{padding:7px 8px; border-bottom:1px solid var(--line);}
+.rank-pill{display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:var(--ink); color:var(--bg); font-weight:700; font-size:12px;}
+.results-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+@media (max-width:880px){.results-grid{grid-template-columns:1fr;}}
+.side-outcomes{display:flex; flex-direction:column; gap:5px; font-size:12px;}
+.side-outcomes .row{display:flex; justify-content:space-between; gap:8px; padding:5px 8px; border-radius:6px; background:var(--surface-2);}
+.side-outcomes .yes{color:var(--good); font-weight:700;}
+.side-outcomes .no{color:var(--ink-dim); font-weight:700;}
+
+.stub{border:1px dashed var(--line-strong); border-radius:8px; padding:10px 12px; background:var(--surface-2); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+.stub .who{font-weight:700; font-size:12.5px;}
+.stub .what{color:var(--ink-dim); font-size:11.5px;}
+.stub .payout{font-family:var(--font-display); font-size:20px; font-weight:600;}
+.stub .payout.pos{color:var(--good);}
+.stub .payout.neg{color:var(--danger);}
+.stub .payout.zero{color:var(--ink-dim);}
+.stub .bet-line{display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--ink-dim); padding:2px 0;}
+.stub .bet-line span.amt{font-weight:700; font-variant-numeric:tabular-nums;}
+.stub .bet-line span.amt.pos{color:var(--good);}
+.stub .bet-line span.amt.neg{color:var(--danger);}
+
+details.rules{margin-top:4px;}
+details.rules summary{cursor:pointer; font-weight:700; font-size:12.5px; color:var(--accent);}
+details.rules .rules-body{margin-top:10px; font-size:12.5px; color:var(--ink-dim); display:grid; gap:6px;}
+
+/* leaderboard */
+.leaderboard{display:flex; flex-direction:column; gap:4px; margin-bottom:14px;}
+.leaderboard .row{display:flex; justify-content:space-between; align-items:center; gap:8px; background:var(--surface-2); border-radius:6px; padding:6px 10px; font-size:12px;}
+.leaderboard .row .pos{color:var(--ink-dim); font-weight:700; width:26px; flex:none;}
+.leaderboard .row .bal{font-family:var(--font-display); font-weight:600; font-variant-numeric:tabular-nums; margin-left:auto;}
+.leaderboard .row .bal.pos-bal{color:var(--good);}
+.leaderboard .row .bal.neg-bal{color:var(--danger);}
+
+/* toast */
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(12px); opacity:0; pointer-events:none;
+  background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:600;
+  box-shadow:0 8px 24px -8px rgba(0,0,0,.5); transition:opacity .25s, transform .25s; z-index:50; max-width:90vw; text-align:center;}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+footer{margin-top:26px; color:var(--ink-dim); font-size:11px; text-align:center;}
+[hidden]{display:none !important;}
+</style>
+
+<div class="wrap">
+  <div class="support-banner">
+    <div class="support-text">🎲 Curtiu a mesa? <strong>Compre o Hot Streak</strong> e apoie o canal, e inscreva-se no <strong>Dados em Jogo</strong> no YouTube.</div>
+    <div class="support-links">
+      <a class="support-link buy" href="https://link.amazon/B091IxLfZ" target="_blank" rel="noopener sponsored">🛒 Comprar na Amazon</a>
+      <a class="support-link yt" href="https://www.youtube.com/@Dados-em-Jogo" target="_blank" rel="noopener">▶️ Dados em Jogo no YouTube</a>
+    </div>
+    <div class="disclaimer">Link de associados Amazon — compras qualificadas ajudam o canal, sem custo extra pra você.</div>
+  </div>
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">Dados em Jogo · simulador</div>
+      <h1>Mesa de Hot Streak</h1>
+      <div class="sub">Monte a mesa, distribua as apostas e rode a corrida carta por carta — usando exatamente as mesmas regras da simulação de Monte Carlo.</div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <!-- STEP 1: SETUP -->
+  <div class="panel" id="panel-setup">
+    <div class="panel-head"><h2><span class="step-num">1</span>Preparar a mesa</h2><div class="hint" id="raceNumTag"></div></div>
+    <div class="setup-row">
+      <label for="numPlayers">Jogadores apostando</label>
+      <select id="numPlayers"></select>
+      <button class="btn-primary" id="btnPrepare">Abrir cartas da mesa →</button>
+    </div>
+    <div class="chk-row">
+      <input type="checkbox" id="chkNoLateralDQ" checked>
+      <label for="chkNoLateralDQ" style="text-transform:none; letter-spacing:0; color:var(--ink);">Desclassificar quem sai pela lateral do tabuleiro (regra padrão)</label>
+    </div>
+    <details class="rules">
+      <summary>Como funciona essa mesa</summary>
+      <div class="rules-body">
+        <div>1. Escolha quantos jogadores vão apostar. Isso define quantas cartas ficam abertas na mesa antes da corrida (mais jogadores = baralho maior). Cada corrida sorteia também UMA aposta paralela das 12 possíveis — as outras ficam de fora dessa vez.</div>
+        <div>2. Cada jogador pode arrastar até 2 apostas pro seu bilhete (igual ao jogo real: 2 tickets por jogador por corrida). O nível do bilhete (1º/2º/3º) é definido pela ordem: quem aposta na mesma coisa primeiro pega o bilhete melhor. Só existem 3 bilhetes por combinação de aposta + modo (seguro/arriscado) — a 4ª tentativa é recusada.</div>
+        <div>3. Ao iniciar a corrida, uma carta secreta de cada jogador entra no baralho e tudo é embaralhado — a partir daí ninguém sabe mais o que vem. Todo mundo começa o jogo com $10, igual no jogo físico.</div>
+        <div>4. Aperte "Próxima carta" repetidas vezes pra revelar o baralho de corrida e ver os mascotes se movendo na pista, até 3 deles cruzarem a linha ou serem desclassificados (o 4º fica em último por eliminação). O saldo de cada jogador acumula corrida após corrida.</div>
+        <div>5. Desmarque a caixinha acima se quiser testar a variante sem desclassificação lateral (a que deixa o jogo praticamente 25/25/25/25 — veja o vídeo pra entender por quê).</div>
+        <div>6. O jogo tem exatamente 3 corridas. Na 3ª corrida, o 2º bilhete de cada jogador paga em dobro (inclusive se o resultado for negativo!) — igual ao jogo físico. Depois da 3ª corrida, "Nova corrida" começa um jogo novo com os saldos reiniciados em $10.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- STEP 2: OPEN CARDS -->
+  <div class="panel" id="panel-open" hidden>
+    <div class="panel-head"><h2><span class="step-num">2</span>Cartas abertas desta corrida</h2><div class="hint">Visíveis pra todo mundo antes de apostar</div></div>
+    <div class="ticket-group-label">Cartas iniciais (sempre as mesmas 4, uma por mascote)</div>
+    <div class="ticket-row" id="fixedCards"></div>
+    <div class="ticket-group-label">Cartas sorteadas e reveladas pra esta corrida</div>
+    <div class="ticket-row" id="visibleCards"></div>
+    <div class="side-banner" id="sideBetBanner"></div>
+  </div>
+
+  <!-- STEP 3: BETTING -->
+  <div class="panel" id="panel-bet" hidden>
+    <div class="panel-head"><h2><span class="step-num">3</span>Distribuir as apostas</h2><div class="hint">Arraste da paleta pro campo do jogador</div></div>
+    <div class="bet-layout">
+      <div>
+        <div class="ticket-group-label">Apostas em mascote</div>
+        <div class="palette-grid" id="paletteMascot"></div>
+        <div class="ticket-group-label">Aposta paralela desta corrida</div>
+        <div class="palette-grid single" id="paletteSide"></div>
+      </div>
+      <div>
+        <div class="ticket-group-label">Bilhetes dos jogadores</div>
+        <div class="slips" id="slips"></div>
+      </div>
+    </div>
+    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" id="btnStartRace">Iniciar corrida →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: RACE -->
+  <div class="panel" id="panel-race" hidden>
+    <div class="panel-head"><h2><span class="step-num">4</span>Corrida</h2></div>
+    <div class="race-controls">
+      <button class="btn-primary" id="btnNext">Próxima carta →</button>
+      <div class="readout">
+        <span>Cartas reveladas: <b id="roCartas">0</b></span>
+        <span>Reembaralhamentos: <b id="roReemb">0</b></span>
+      </div>
+    </div>
+    <div class="track-scroll"><div class="track-wrap"><div class="track" id="trackGrid"></div><div class="token-layer" id="tokenLayer"></div></div></div>
+    <div class="ticket-group-label">Log da corrida</div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- STEP 5: RESULTS -->
+  <div class="panel" id="panel-results" hidden>
+    <div class="panel-head"><h2><span class="step-num">5</span>Resultado</h2></div>
+    <div class="results-grid">
+      <div>
+        <div class="ticket-group-label">Colocação final</div>
+        <table class="standings"><thead><tr><th></th><th>Mascote</th><th>Situação</th></tr></thead><tbody id="standingsBody"></tbody></table>
+        <div class="ticket-group-label">Aposta paralela desta corrida — o que aconteceu</div>
+        <div class="side-outcomes" id="sideOutcomes"></div>
+      </div>
+      <div>
+        <div class="ticket-group-label">Placar geral (acumulado)</div>
+        <div class="leaderboard" id="leaderboard"></div>
+        <div class="ticket-group-label">Bilhetes dos jogadores</div>
+        <div id="payoutStubs"></div>
+      </div>
+    </div>
+    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+      <button class="btn" id="btnReset">↺ Nova corrida</button>
+    </div>
+  </div>
+
+  <footer>Baseado na simulação de Monte Carlo de Hot Streak (Jon Perry / CMYK) feita pro canal Dados em Jogo. Ferramenta não-oficial, sem afiliação com a editora.</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================== GAME DATA ============================== */
+var MASCOTS = ["Gobbler","Hurley","Dangle","Mum"];
+var MASCOT_PT = {Gobbler:"Gluglu", Hurley:"Jibas", Dangle:"Brinco", Mum:"Mona"};
+var MASCOT_VAR = {Gobbler:"--m-gluglu", Hurley:"--m-jibas", Dangle:"--m-brinco", Mum:"--m-mona"};
+var LANE = {Gobbler:0, Hurley:1, Dangle:2, Mum:3};
+var LANE_ORDER = ["Gobbler","Hurley","Dangle","Mum"];
+var SWERVE_DIR = {Gobbler:1, Hurley:-1, Dangle:1, Mum:-1};
+var FINISH=1, START=12, BACK=14;
+var STARS = {1:true,2:true,7:true,14:true};
+var FOLD_ORDER = [11,8,4];
+var PLAYERS_TABLE = {3:11,4:10,5:9,6:8,7:7,8:6};
+
+var KIND_LABEL = {fall:"Tombo", turn:"Meia-volta", star:"Anda até a estrela", move:"Anda {v}", recover_move:"Recuperação + anda {v}", move_swerve:"Anda {v} + desvio"};
+
+function buildAllCards(){
+  var cards=[], cid=0;
+  var perMascotTypes=[["fall",null],["turn",null],["star",null],["move",2],["move",3],["move",-2],
+    ["recover_move",2],["move_swerve",2],["move_swerve",1],["move_swerve",3],["recover_move",1]];
+  var startingCards={};
+  MASCOTS.forEach(function(m){
+    perMascotTypes.forEach(function(t){
+      var c={owner:m, kind:t[0], value:t[1], id:cid}; cards.push(c); cid++;
+      if(t[0]==="recover_move" && t[1]===2) startingCards[m]=c;
+    });
+  });
+  var greenTypes=[["move",1],["move",1],["move",2],["move",2],["move",3],["move",3],["move",-2],["recover_move",2],["recover_move",3]];
+  greenTypes.forEach(function(t){ cards.push({owner:null, kind:t[0], value:t[1], id:cid}); cid++; });
+  return {cards:cards, startingCards:startingCards};
+}
+var built = buildAllCards();
+var ALL_CARDS = built.cards, STARTING_CARDS = built.startingCards;
+var STARTING_IDS = {}; Object.keys(STARTING_CARDS).forEach(function(m){ STARTING_IDS[STARTING_CARDS[m].id]=true; });
+var ELIGIBLE_SECRET_CARDS = ALL_CARDS.filter(function(c){ return !STARTING_IDS[c.id]; });
+
+function cardLabel(c){
+  var base = KIND_LABEL[c.kind];
+  if(base.indexOf("{v}")>=0) base = base.replace("{v}", c.value);
+  var owner = c.owner ? MASCOT_PT[c.owner] : "Verde (todos)";
+  return owner + " — " + base;
+}
+function cardColorVar(c){ return c.owner ? MASCOT_VAR[c.owner] : null; }
+
+function shuffle(arr){
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+  return arr;
+}
+function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* ---- payout tables (from betting_ev.py) ---- */
+var SAFE_MASCOT = {1:[10,7,5], 2:[7,5,3], 3:[5,3,2]};
+var RISKY_MASCOT = {1:[15,5,2], 2:[11,3,1], 3:[8,2,0]};
+var SAFE_SIDE = {1:[10,0], 2:[7,0], 3:[5,0]};
+var RISKY_SIDE = {1:[15,-5], 2:[12,-5], 3:[10,-5]};
+
+var SIDE_BET_DEFS = [
+  {key:"dq_qualquer", label:"Pelo menos 1 mascote é desclassificado"},
+  {key:"fora_dos_limites", label:"Um mascote sai dos limites (lateral/fundo/dobra)"},
+  {key:"nocaute", label:"Um mascote é nocauteado"},
+  {key:"duas_tombadas", label:"2+ mascotes tombados ao mesmo tempo"},
+  {key:"duas_mesmo_espaco", label:"2 mascotes no mesmo espaço ao mesmo tempo"},
+  {key:"duas_na_pre_chegada", label:"2+ mascotes na casa antes da chegada juntos"},
+  {key:"ultimo_trecho_vazio_no_1o", label:"Último trecho vazio quando alguém cruza em 1º"},
+  {key:"rastejo_zona_final", label:"Um mascote rasteja no último trecho"},
+];
+MASCOTS.forEach(function(m){
+  SIDE_BET_DEFS.push({key: MASCOT_PT[m].toLowerCase()+"_ultimas_duas", label: MASCOT_PT[m]+" termina nas 2 últimas colocações", mascotSpecific:true});
+});
+
+var DQ_LABEL = {
+  nocaute:"nocauteado (colisão dupla)", fora_pela_lateral:"saiu pela lateral",
+  fora_pelo_fundo:"saiu pelo fundo", retardatario_dobra:"ficou pra trás numa dobra"
+};
+function ordinal(r){ return ["","1º","2º","3º","4º"][r] || "-"; }
+
+/* ============================== ENGINE (ported from sim.py) ============================== */
+function newState(name){ return {name:name, lane:LANE[name], pos:START, fallen:false, reversed_:false, status:"racing", rank:null, dqReason:null}; }
+function activeMascots(states){ return MASCOTS.map(function(m){return states[m];}).filter(function(s){return s.status==="racing";}); }
+function occupantAt(states, lane, pos, exclude){
+  var out=[];
+  MASCOTS.forEach(function(m){
+    var s=states[m];
+    if(s.status!=="racing") return;
+    if(exclude && s.name===exclude.name) return;
+    if(s.lane===lane && s.pos===pos) out.push(s);
+  });
+  return out;
+}
+function assignFinish(states,m,os){ os.nextFinish+=1; m.status="finished"; m.rank=os.nextFinish; os.finishEvents.push(m.name); }
+function assignDQ(states,m,reason,os){ m.status="dq"; m.dqReason=reason; os.dqSlots.push(m.name); }
+function finalizeRanks(states,os){
+  var total=4;
+  os.dqSlots.forEach(function(name,i){ states[name].rank = total-i; });
+  var remaining = MASCOTS.map(function(m){return states[m];}).filter(function(s){return s.status==="racing";});
+  if(remaining.length){
+    var s=remaining[0];
+    var used={}; MASCOTS.forEach(function(m){ if(states[m].rank!==null) used[states[m].rank]=true; });
+    var leftover=[1,2,3,4].filter(function(r){return !used[r];});
+    s.rank=leftover[0]; s.status="finished_default";
+  }
+}
+function effectiveStep(v, rev){ return !rev ? -v : v; }
+function checkCrawlZone(oldPos,newPos,events){ var z=oldPos<=4, z2=newPos<=4; if(z!==z2) events.rastejo_zona_final=true; }
+function applyCollision(states, other, os){
+  if(other.status!=="racing") return;
+  if(other.fallen) assignDQ(states, other, "nocaute", os); else other.fallen=true;
+}
+function applySwerve(states, m, os){
+  if(m.status!=="racing") return;
+  var d = SWERVE_DIR[m.name] * (m.reversed_ ? -1 : 1);
+  var newLane = m.lane + d;
+  if(newLane<0 || newLane>3){
+    if(NO_LATERAL_DQ) return; // regra desligada: desvio ignorado, mascote fica na raia
+    assignDQ(states,m,"fora_pela_lateral",os); return;
+  }
+  var occ = occupantAt(states,newLane,m.pos,m);
+  m.lane = newLane;
+  occ.forEach(function(o){ applyCollision(states,o,os); });
+}
+function moveMascot(states,m,rawValue,os,events,green){
+  if(m.status!=="racing") return;
+  var magnitude = m.fallen ? 1 : Math.abs(rawValue);
+  var sign = rawValue>=0 ? 1 : -1;
+  var value = sign*magnitude;
+  var step = effectiveStep(value, m.reversed_);
+  var oldPos = m.pos, newPos = oldPos+step;
+
+  if(green){
+    if(newPos<FINISH) newPos=FINISH;
+    if(newPos>BACK) newPos=BACK;
+    if(m.fallen) checkCrawlZone(oldPos,newPos,events);
+    m.pos = newPos;
+    return;
+  }
+  var path=[];
+  if(step<0){ for(var p=oldPos-1;p>=newPos;p--) path.push(p); }
+  else if(step>0){ for(var p2=oldPos+1;p2<=newPos;p2++) path.push(p2); }
+  if(m.fallen) checkCrawlZone(oldPos,newPos,events);
+  var finished=false;
+  for(var i=0;i<path.length;i++){
+    var pp=path[i];
+    if(pp<FINISH){ finished=true; break; }
+    if(pp>BACK){ assignDQ(states,m,"fora_pelo_fundo",os); return; }
+    var occ = occupantAt(states,m.lane,pp,m);
+    occ.forEach(function(o){ applyCollision(states,o,os); });
+  }
+  if(finished){ assignFinish(states,m,os); return; }
+  m.pos = newPos;
+}
+function doStarMove(states,m,os,events){
+  if(m.fallen){ moveMascot(states,m,1,os,events,false); return; }
+  var oldPos=m.pos, target=null;
+  var starKeys=[1,2,7,14];
+  if(!m.reversed_){
+    var cands = starKeys.filter(function(s){return s<oldPos;});
+    target = cands.length ? Math.max.apply(null,cands) : null;
+  } else {
+    var cands2 = starKeys.filter(function(s){return s>oldPos;});
+    target = cands2.length ? Math.min.apply(null,cands2) : null;
+  }
+  if(target===null) return;
+  var step = target-oldPos;
+  if(m.fallen) checkCrawlZone(oldPos,target,events);
+  var path=[];
+  if(step<0){ for(var p=oldPos-1;p>=target;p--) path.push(p); }
+  else { for(var p2=oldPos+1;p2<=target;p2++) path.push(p2); }
+  var finished=false;
+  for(var i=0;i<path.length;i++){
+    var pp=path[i];
+    if(pp<FINISH){ finished=true; break; }
+    var occ=occupantAt(states,m.lane,pp,m);
+    occ.forEach(function(o){ applyCollision(states,o,os); });
+  }
+  if(finished) assignFinish(states,m,os); else m.pos=target;
+}
+function resolveCard(card, states, os, events){
+  if(card.owner===null){
+    MASCOTS.forEach(function(name){
+      var m=states[name];
+      if(m.status!=="racing") return;
+      if(card.kind==="recover_move"){ m.fallen=false; m.reversed_=false; moveMascot(states,m,card.value,os,events,true); }
+      else if(card.kind==="move"){ moveMascot(states,m,card.value,os,events,true); }
+    });
+    return;
+  }
+  var m = states[card.owner];
+  if(m.status!=="racing") return;
+  if(card.kind==="fall"){ if(m.fallen) assignDQ(states,m,"nocaute",os); else m.fallen=true; }
+  else if(card.kind==="turn"){ m.reversed_ = !m.reversed_; }
+  else if(card.kind==="star"){ doStarMove(states,m,os,events); }
+  else if(card.kind==="move"){ moveMascot(states,m,card.value,os,events,false); }
+  else if(card.kind==="recover_move"){ m.fallen=false; m.reversed_=false; moveMascot(states,m,card.value,os,events,false); }
+  else if(card.kind==="move_swerve"){ moveMascot(states,m,card.value,os,events,false); applySwerve(states,m,os); }
+}
+function checkZone9AndPair(states, events){
+  var active = activeMascots(states);
+  var at2 = active.filter(function(s){return s.pos===2;});
+  if(at2.length>=2) events.duas_na_pre_chegada=true;
+  var seen={};
+  active.forEach(function(s){ var k=s.lane+"_"+s.pos; (seen[k]=seen[k]||[]).push(s.name); });
+  Object.keys(seen).forEach(function(k){ if(seen[k].length>=2) events.duas_mesmo_espaco=true; });
+  if(active.filter(function(s){return s.fallen;}).length>=2) events.duas_tombadas=true;
+}
+function buildDeckWithSecrets(numPlayers){
+  var N = PLAYERS_TABLE[numPlayers];
+  var pool = ELIGIBLE_SECRET_CARDS.slice(); shuffle(pool);
+  var visible = pool.slice(0,N);
+  var rest = pool.slice(N); shuffle(rest);
+  var hands=[]; for(var i=0;i<numPlayers;i++) hands.push(rest.slice(i*3,i*3+3));
+  var secrets = hands.map(function(h){ return choice(h); });
+  var deck = Object.keys(STARTING_CARDS).map(function(m){return STARTING_CARDS[m];}).concat(visible).concat(secrets);
+  shuffle(deck);
+  return {deck:deck, secrets:secrets, visible:visible};
+}
+
+/* ============================== UI STATE ============================== */
+var G = null;
+var NO_LATERAL_DQ = false;
+var STARTING_MONEY = 10; // $10 por jogador, igual ao jogo fisico (ver regras oficiais)
+var BANKROLL = [];
+var RACE_NUM = 1;
+var MAX_RACES = 3;
+var SIDE_BET_QUEUE = [];
+function ensureSession(n){
+  if(BANKROLL.length !== n){
+    BANKROLL = new Array(n).fill(STARTING_MONEY);
+    RACE_NUM = 1;
+    SIDE_BET_QUEUE = [];
+  }
+}
+function nextSideBet(){
+  if(SIDE_BET_QUEUE.length===0) SIDE_BET_QUEUE = shuffle(SIDE_BET_DEFS.slice());
+  return SIDE_BET_QUEUE.shift();
+}
+var ORDINAL_PT = ["","primeira","segunda","terceira","quarta","quinta","sexta","sétima","oitava","nona","décima"];
+function ordinalRace(n){
+  if(n>=1 && n<=10) return ORDINAL_PT[n]+" corrida";
+  return n+"ª corrida";
+}
+function updateRaceNumTag(){
+  var el = document.getElementById("raceNumTag");
+  if(el) el.textContent = "("+ordinalRace(RACE_NUM)+" de "+MAX_RACES+")";
+}
+var toastTimer=null;
+function showToast(msg){
+  var el=document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2600);
+}
+
+function initG(numPlayers){
+  var bets=[];
+  for(var i=0;i<numPlayers;i++) bets.push([null,null]);
+  return {
+    phase:"setup", numPlayers:numPlayers,
+    visible:[], deck:[], states:null, orderState:null, events:null,
+    burnPile:[], discard:[], idx:0, foldUsed:0,
+    bets: bets,
+    log:[]
+  };
+}
+
+var MASCOT_LIST_PT = MASCOTS.map(function(m){return {eng:m, pt:MASCOT_PT[m], varName:MASCOT_VAR[m]};});
+
+function buildLegend(){
+  var el=document.getElementById("legend");
+  el.innerHTML = MASCOT_LIST_PT.map(function(m){
+    return '<span class="chip"><span class="dot" style="background:var('+m.varName+')"></span>'+m.pt+'</span>';
+  }).join("");
+}
+
+function buildNumPlayersSelect(){
+  var sel=document.getElementById("numPlayers");
+  sel.innerHTML="";
+  [3,4,5,6,7,8].forEach(function(n){
+    var o=document.createElement("option"); o.value=n; o.textContent=n+(n===5?" (padrão da simulação)":"");
+    if(n===5) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+/* ---- STEP 1 -> 2: prepare table ---- */
+function prepareTable(){
+  var numPlayers = parseInt(document.getElementById("numPlayers").value,10);
+  ensureSession(numPlayers);
+  NO_LATERAL_DQ = !document.getElementById("chkNoLateralDQ").checked;
+  G = initG(numPlayers);
+  G.raceNum = RACE_NUM;
+  var N = PLAYERS_TABLE[numPlayers];
+  var pool = ELIGIBLE_SECRET_CARDS.slice(); shuffle(pool);
+  G.visible = pool.slice(0,N);
+  G._restPool = pool.slice(N); // secrets drawn from here at race start
+  G.activeSideBet = nextSideBet();
+  G.phase = "betting_setup";
+  renderOpenCards();
+  renderSideBetBanner();
+  renderBettingPanel();
+  document.getElementById("btnPrepare").disabled=true;
+  document.getElementById("numPlayers").disabled=true;
+  document.getElementById("chkNoLateralDQ").disabled=true;
+  document.getElementById("panel-open").hidden=false;
+  document.getElementById("panel-bet").hidden=false;
+  document.getElementById("panel-race").hidden=true;
+  document.getElementById("panel-results").hidden=true;
+  document.getElementById("panel-open").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function renderOpenCards(){
+  var fixedWrap=document.getElementById("fixedCards");
+  fixedWrap.innerHTML = MASCOTS.map(function(m){
+    var c = STARTING_CARDS[m];
+    return ticketHTML(c, true);
+  }).join("");
+  var visWrap=document.getElementById("visibleCards");
+  visWrap.innerHTML = G.visible.map(function(c){ return ticketHTML(c,false); }).join("");
+}
+function ticketHTML(c, fixed){
+  var varName = cardColorVar(c);
+  var ownerLabel = c.owner ? MASCOT_PT[c.owner] : "Verde";
+  var dot = varName ? '<span class="dot" style="background:var('+varName+')"></span>' : '<span class="dot" style="background:var(--ink-dim)"></span>';
+  var kindTxt = KIND_LABEL[c.kind].replace("{v}", c.value);
+  return '<div class="ticket'+(fixed?' fixed':'')+'"><div class="owner">'+dot+ownerLabel+'</div><div class="kind">'+kindTxt+'</div></div>';
+}
+function renderSideBetBanner(){
+  var el=document.getElementById("sideBetBanner");
+  el.innerHTML = '<span class="die">🎲</span><div>Aposta paralela sorteada pra esta corrida: <b>'+G.activeSideBet.label+'</b></div>';
+}
+
+/* ---- STEP 3: betting palette + slips ---- */
+function renderBettingPanel(){
+  var pm=document.getElementById("paletteMascot");
+  pm.innerHTML = MASCOT_LIST_PT.map(function(m){
+    return '<div class="palette-card" id="card-m-'+m.eng+'" draggable="true" data-type="mascot" data-mascot="'+m.eng+'">'+
+      '<div class="name"><span class="dot" style="background:var('+m.varName+')"></span>'+m.pt+'</div>'+
+      '<div class="pay">Seguro nv1: 10/7/5 · Arriscado nv1: 15/5/2</div>'+
+      '<div class="cap" id="cap-m-'+m.eng+'"></div></div>';
+  }).join("");
+
+  var ps=document.getElementById("paletteSide");
+  ps.innerHTML = '<div class="palette-card" id="card-side" draggable="true" data-type="side" data-side="'+G.activeSideBet.key+'">'+
+      '<div class="name">'+G.activeSideBet.label+'</div>'+
+      '<div class="pay">Seguro nv1: 10/0 · Arriscado nv1: 15/-5</div>'+
+      '<div class="cap" id="cap-side"></div></div>';
+
+  var slipsWrap=document.getElementById("slips");
+  var html="";
+  for(var i=0;i<G.numPlayers;i++){
+    html += '<div class="slip"><div class="slip-label"><span>Jogador '+(i+1)+'</span><span class="saldo-chip">saldo: $'+BANKROLL[i]+'</span></div>'+
+      '<div class="slip-slots">'+
+        '<div class="slip-body" data-idx="'+i+'" data-slot="0" id="slipBody-'+i+'-0"><span class="empty-hint">aposta 1 — arraste aqui</span></div>'+
+        '<div class="slip-body" data-idx="'+i+'" data-slot="1" id="slipBody-'+i+'-1"><span class="empty-hint">'+(G.raceNum===3?"aposta 2 — arraste aqui (paga em dobro!)":"aposta 2 — arraste aqui")+'</span></div>'+
+      '</div></div>';
+  }
+  slipsWrap.innerHTML = html;
+
+  attachDragHandlers();
+  recomputeTiers();
+  document.getElementById("btnStartRace").disabled=false;
+}
+
+function attachDragHandlers(){
+  var cards = document.querySelectorAll(".palette-card");
+  cards.forEach(function(c){
+    c.addEventListener("dragstart", function(e){
+      var payload = c.dataset.type==="mascot" ? {type:"mascot", mascot:c.dataset.mascot} : {type:"side", sideKey:c.dataset.side};
+      e.dataTransfer.setData("text/plain", JSON.stringify(payload));
+      e.dataTransfer.effectAllowed="copy";
+    });
+  });
+  var slots = document.querySelectorAll(".slip-body");
+  slots.forEach(function(sb){
+    sb.addEventListener("dragover", function(e){ e.preventDefault(); e.dataTransfer.dropEffect="copy"; sb.classList.add("dragover"); });
+    sb.addEventListener("dragleave", function(){ sb.classList.remove("dragover"); });
+    sb.addEventListener("drop", function(e){
+      e.preventDefault(); sb.classList.remove("dragover");
+      var raw = e.dataTransfer.getData("text/plain");
+      if(!raw) return;
+      var payload = JSON.parse(raw);
+      var idx = parseInt(sb.dataset.idx,10), slot = parseInt(sb.dataset.slot,10);
+      var candidate = payload.type==="mascot"
+        ? {type:"mascot", mascot:payload.mascot, modo:"seguro"}
+        : {type:"side", sideKey:payload.sideKey, side:"SIM", modo:"seguro"};
+      var sig = betSignature(candidate);
+      var existing = G.bets[idx][slot];
+      var existingSig = existing ? betSignature(existing) : null;
+      var used = countSignature(sig) - (existingSig===sig?1:0);
+      if(used>=3){
+        showToast("Esgotado — só existem 3 bilhetes desse tipo (níveis 1 a 3).");
+        return;
+      }
+      G.bets[idx][slot] = candidate;
+      recomputeTiers();
+      renderSlips();
+    });
+  });
+}
+
+function allBets(){
+  var out=[];
+  G.bets.forEach(function(pair){ pair.forEach(function(b){ if(b) out.push(b); }); });
+  return out;
+}
+function betSignature(bet){
+  if(!bet) return null;
+  if(bet.type==="mascot") return "m:"+bet.mascot+":"+bet.modo;
+  return "s:"+bet.sideKey+":"+bet.side+":"+bet.modo;
+}
+function countSignature(sig){
+  return allBets().filter(function(b){ return betSignature(b)===sig; }).length;
+}
+function recomputeTiers(){
+  var counter={};
+  for(var i=0;i<G.bets.length;i++){
+    for(var slot=0; slot<2; slot++){
+      var b=G.bets[i][slot];
+      if(!b) continue;
+      var sig=betSignature(b);
+      counter[sig]=(counter[sig]||0)+1;
+      b.tier=Math.min(counter[sig],3);
+    }
+  }
+  updateCapacityBadges();
+}
+function updateCapacityBadges(){
+  MASCOTS.forEach(function(m){
+    var segLeft = 3-countSignature("m:"+m+":seguro");
+    var arrLeft = 3-countSignature("m:"+m+":arriscado");
+    var el = document.getElementById("cap-m-"+m);
+    if(el) el.innerHTML = "Seguro: <b>"+segLeft+"/3</b> livres · Arriscado: <b>"+arrLeft+"/3</b> livres";
+    var card = document.getElementById("card-m-"+m);
+    if(card) card.classList.toggle("full", segLeft<=0 && arrLeft<=0);
+  });
+  if(G && G.activeSideBet){
+    var k=G.activeSideBet.key;
+    var combos=[["SIM","seguro","Sim·seg"],["SIM","arriscado","Sim·arr"],["NAO","seguro","Não·seg"],["NAO","arriscado","Não·arr"]];
+    var el2=document.getElementById("cap-side");
+    if(el2){
+      el2.innerHTML = combos.map(function(c2){
+        var left = 3-countSignature("s:"+k+":"+c2[0]+":"+c2[1]);
+        return c2[2]+": <b>"+left+"/3</b>";
+      }).join(" · ");
+    }
+    var card2=document.getElementById("card-side");
+    if(card2){
+      var allFull = combos.every(function(c2){ return countSignature("s:"+k+":"+c2[0]+":"+c2[1])>=3; });
+      card2.classList.toggle("full", allFull);
+    }
+  }
+}
+function sideBetLabel(key){
+  var d=SIDE_BET_DEFS.filter(function(x){return x.key===key;})[0];
+  return d?d.label:key;
+}
+function renderSlips(){
+  for(var i=0;i<G.numPlayers;i++){
+    for(var slot=0; slot<2; slot++){
+      var body=document.getElementById("slipBody-"+i+"-"+slot);
+      var bet=G.bets[i][slot];
+      var dobro = (G.raceNum===3 && slot===1);
+      if(!bet){ body.innerHTML='<span class="empty-hint">aposta '+(slot+1)+' — arraste aqui'+(dobro?" (paga em dobro!)":"")+'</span>'; continue; }
+      var title, dotVar=null;
+      if(bet.type==="mascot"){ title=MASCOT_PT[bet.mascot]; dotVar=MASCOT_VAR[bet.mascot]; }
+      else { title=sideBetLabel(bet.sideKey); }
+      var tierTxt = "nível "+bet.tier+(dobro?" · 2x":"");
+      body.innerHTML =
+        '<div class="bet-card">'+
+          '<div class="bc-main">'+
+            '<div class="bc-title">'+(dotVar?'<span class="dot" style="background:var('+dotVar+')"></span>':'')+title+'</div>'+
+            '<div class="bc-controls">'+
+              toggleHTML(i,slot,"modo",["seguro","arriscado"],bet.modo,{seguro:"Seguro",arriscado:"Arriscado"})+
+              (bet.type==="side" ? toggleHTML(i,slot,"side",["SIM","NAO"],bet.side,{SIM:"Sim",NAO:"Não"}) : "")+
+              '<span class="tier-badge">'+tierTxt+'</span>'+
+            '</div>'+
+          '</div>'+
+          '<button class="remove-x" data-remove-idx="'+i+'" data-remove-slot="'+slot+'" title="remover">×</button>'+
+        '</div>';
+    }
+  }
+  document.querySelectorAll("[data-remove-idx]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var i=parseInt(btn.dataset.removeIdx,10), slot=parseInt(btn.dataset.removeSlot,10);
+      G.bets[i][slot]=null; recomputeTiers(); renderSlips();
+    });
+  });
+  document.querySelectorAll("[data-togidx]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var i=parseInt(btn.dataset.togidx,10), slot=parseInt(btn.dataset.togslot,10), field=btn.dataset.field, val=btn.dataset.val;
+      var bet = G.bets[i][slot];
+      if(bet[field]===val) return;
+      var candidate = {}; for(var k in bet) candidate[k]=bet[k]; candidate[field]=val;
+      var sig = betSignature(candidate);
+      if(countSignature(sig)>=3){ showToast("Esgotado — só existem 3 bilhetes desse tipo (níveis 1 a 3)."); return; }
+      bet[field]=val;
+      recomputeTiers();
+      renderSlips();
+    });
+  });
+}
+function toggleHTML(i, slot, field, values, current, labels){
+  return '<span class="toggle">'+values.map(function(v){
+    return '<button type="button" data-togidx="'+i+'" data-togslot="'+slot+'" data-field="'+field+'" data-val="'+v+'" class="'+(v===current?"active":"")+'">'+labels[v]+'</button>';
+  }).join("")+'</span>';
+}
+
+function lockBettingControls(){
+  document.querySelectorAll(".palette-card").forEach(function(c){
+    c.setAttribute("draggable","false"); c.style.opacity=".45"; c.style.cursor="default";
+  });
+  document.querySelectorAll(".remove-x, [data-togidx]").forEach(function(b){ b.disabled=true; });
+  document.getElementById("btnStartRace").disabled=true;
+}
+
+/* ---- STEP 3 -> 4: start race ---- */
+function startRace(){
+  lockBettingControls();
+  var N = G.numPlayers;
+  var rest = G._restPool.slice(); shuffle(rest);
+  var hands=[]; for(var i=0;i<N;i++) hands.push(rest.slice(i*3,i*3+3));
+  var secrets = hands.map(function(h){ return choice(h.length?h:ELIGIBLE_SECRET_CARDS); });
+  var deck = MASCOTS.map(function(m){return STARTING_CARDS[m];}).concat(G.visible).concat(secrets);
+  shuffle(deck);
+
+  G.deck = deck;
+  G.states = {}; MASCOTS.forEach(function(m){ G.states[m]=newState(m); });
+  G.orderState = {nextFinish:0, finishEvents:[], dqSlots:[]};
+  G.events = {dq_qualquer:false, fora_dos_limites:false, nocaute:false, duas_tombadas:false,
+    rastejo_zona_final:false, duas_mesmo_espaco:false, duas_na_pre_chegada:false,
+    ultimo_trecho_vazio_no_1o:null, n_cartas_reveladas:0, n_reembaralhamentos:0};
+  G.burnPile = G.deck.slice(0,3);
+  G.discard = [];
+  G.idx = 3;
+  G.foldUsed = 0;
+  G.log = [];
+  G.phase = "racing";
+
+  logLine("🃏 3 cartas queimadas no início do baralho (regra padrão de largada).", "card");
+  logLine("🔒 "+N+" carta(s) secreta(s) embaralhada(s) — ninguém sabe mais o que vem.", "card");
+
+  document.getElementById("panel-race").hidden=false;
+  document.getElementById("panel-results").hidden=true;
+  renderTrackGrid();
+  updateTokens();
+  renderLog();
+  updateReadouts();
+  document.getElementById("btnNext").disabled=false;
+  document.getElementById("panel-race").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function nSettled(){ return G.orderState.finishEvents.length + G.orderState.dqSlots.length; }
+
+function snapshotAll(){
+  var out={};
+  MASCOTS.forEach(function(m){
+    var s=G.states[m];
+    out[m]={status:s.status, fallen:s.fallen, reversed_:s.reversed_, lane:s.lane, pos:s.pos, rank:s.rank, dqReason:s.dqReason};
+  });
+  return out;
+}
+
+function nextCard(){
+  if(G.phase!=="racing") return;
+  var guard=0;
+  while(G.idx >= G.deck.length){
+    guard++; if(guard>50) break;
+    G.events.n_reembaralhamentos++;
+    G.deck = G.burnPile.concat(G.discard);
+    shuffle(G.deck);
+    G.burnPile=[]; G.discard=[]; G.idx=0;
+    if(G.foldUsed < FOLD_ORDER.length){
+      var boundary = FOLD_ORDER[G.foldUsed]; G.foldUsed++;
+      var dqed=[];
+      activeMascots(G.states).forEach(function(s){
+        if(s.pos>boundary){ assignDQ(G.states,s,"retardatario_dobra",G.orderState); dqed.push(MASCOT_PT[s.name]); }
+      });
+      logLine("↩️ Baralho esgotado — dobra a pista na casa "+boundary+"."+(dqed.length? " "+dqed.join(", ")+" retardatário(s), desclassificado(s).":" Ninguém ficou pra trás desta vez."), "fold");
+      updateTokens();
+      if(nSettled()>=3){ finishRace(); return; }
+    }
+    G.burnPile = G.deck.slice(0,3);
+    G.idx = 3;
+  }
+  var card = G.deck[G.idx]; G.idx++;
+  G.discard.push(card);
+  G.events.n_cartas_reveladas++;
+  var wasFirstFinish = G.orderState.finishEvents.length===0;
+  var before = snapshotAll();
+  resolveCard(card, G.states, G.orderState, G.events);
+  checkZone9AndPair(G.states, G.events);
+  if(wasFirstFinish && G.orderState.finishEvents.length===1){
+    var zoneMascots = MASCOTS.filter(function(n){
+      return n!==G.orderState.finishEvents[0] && G.states[n].pos<=4 && G.states[n].status==="racing";
+    });
+    G.events.ultimo_trecho_vazio_no_1o = (zoneMascots.length===0);
+  }
+  var changed = diffAndLog(before, card);
+  updateReadouts();
+  updateTokens(changed);
+  if(nSettled()>=3){ finishRace(); }
+}
+
+function diffAndLog(before, card){
+  logLine("🎴 "+cardLabel(card), "card");
+  var changed=[];
+  MASCOTS.forEach(function(m){
+    var b=before[m], a=G.states[m], pt=MASCOT_PT[m];
+    if(b.status==="racing" && a.status==="finished"){
+      logLine("🏁 "+pt+" cruza a chegada em "+ordinal(a.rank)+"!", "finish");
+      changed.push(m); return;
+    }
+    if(b.status==="racing" && a.status==="dq"){
+      logLine("🚫 "+pt+" desclassificado — "+DQ_LABEL[a.dqReason]+".", "dq");
+      changed.push(m); return;
+    }
+    if(a.status!=="racing") return;
+    var diffAny=false;
+    if(!b.fallen && a.fallen){ logLine("💥 "+pt+" tomba!"); diffAny=true; }
+    if(b.fallen && !a.fallen){ logLine("✅ "+pt+" se recupera."); diffAny=true; }
+    if(b.reversed_!==a.reversed_){ logLine("🔄 "+pt+(a.reversed_?" fica virado (movimento invertido).":" volta ao normal.")); diffAny=true; }
+    if(b.lane!==a.lane){ logLine("↔️ "+pt+" desvia de raia."); diffAny=true; }
+    if(b.pos!==a.pos){ logLine("➡️ "+pt+" vai pra casa "+a.pos+"."); diffAny=true; }
+    if(diffAny) changed.push(m);
+  });
+  return changed;
+}
+function logLine(text, cls){ G.log.push({text:text, cls:cls||""}); renderLogAppendOnly(); }
+function renderLog(){
+  var el=document.getElementById("log");
+  el.innerHTML = G.log.map(function(e){ return '<div class="entry '+e.cls+'">'+e.text+'</div>'; }).reverse().join("");
+}
+function renderLogAppendOnly(){ renderLog(); }
+
+function updateReadouts(){
+  document.getElementById("roCartas").textContent = G.events.n_cartas_reveladas;
+  document.getElementById("roReemb").textContent = G.events.n_reembaralhamentos;
+}
+
+/* ---- track rendering ---- */
+function renderTrackGrid(){
+  var el=document.getElementById("trackGrid");
+  var html="";
+  html += '<div class="hcell" style="grid-column:1; grid-row:1;"></div>';
+  for(var pos=14; pos>=1; pos--){
+    var col = 16-pos;
+    var isStar = STARS[pos];
+    var cls = "hcell"+(isStar?" star":"")+(pos===11||pos===8||pos===4?" fold-line":"");
+    html += '<div class="'+cls+'" style="grid-column:'+col+'; grid-row:1;">'+pos+(isStar?" ★":"")+(pos===START?'<span class="startflag">LARGADA</span>':"")+'</div>';
+  }
+  LANE_ORDER.forEach(function(m, li){
+    var row = li+2;
+    html += '<div class="lane-label" style="grid-column:1; grid-row:'+row+';"><span class="dot" style="background:var('+MASCOT_VAR[m]+')"></span>'+MASCOT_PT[m]+'</div>';
+    for(var pos2=14; pos2>=1; pos2--){
+      var col2 = 16-pos2;
+      var cls2 = "cell"+(pos2===11||pos2===8||pos2===4?" fold-line":"");
+      html += '<div class="'+cls2+'" style="grid-column:'+col2+'; grid-row:'+row+';"></div>';
+    }
+  });
+  el.innerHTML = html;
+
+  var layer = document.getElementById("tokenLayer");
+  layer.innerHTML = "";
+  G.tokenEls = {};
+  MASCOTS.forEach(function(m){
+    var token = document.createElement("div");
+    token.className = "token";
+    token.style.background = "var("+MASCOT_VAR[m]+")";
+    token.textContent = MASCOT_PT[m].slice(0,2).toUpperCase();
+    layer.appendChild(token);
+    G.tokenEls[m] = token;
+  });
+}
+function posToLeftPct(pos){ return (((14-pos)+0.5)/14)*100; }
+function laneToTopPct(lane){ return ((lane+0.5)/4)*100; }
+function updateTokens(changedNames){
+  MASCOTS.forEach(function(m){
+    var s = G.states[m], token = G.tokenEls[m];
+    if(!token) return;
+    var leftPct = posToLeftPct(s.pos);
+    var shareLane = MASCOTS.filter(function(m2){
+      return m2!==m && G.states[m2].lane===s.lane && G.states[m2].pos===s.pos && G.states[m2].status!=="dq";
+    });
+    if(shareLane.length) leftPct += (m < shareLane[0] ? -1.8 : 1.8);
+    token.style.left = leftPct+"%";
+    token.style.top = laneToTopPct(s.lane)+"%";
+    token.classList.toggle("fallen", !!s.fallen);
+    token.classList.toggle("reversed", !!s.reversed_);
+    token.classList.toggle("dq", s.status==="dq");
+    token.classList.toggle("finished", s.status==="finished" || s.status==="finished_default");
+    token.title = MASCOT_PT[m]+" — raia "+(s.lane+1)+", casa "+s.pos+(s.status!=="racing"?" ("+s.status+")":"");
+    if(changedNames && changedNames.indexOf(m)>=0){
+      token.classList.remove("pulse");
+      void token.offsetWidth; // restart animation
+      token.classList.add("pulse");
+    }
+  });
+}
+
+/* ---- STEP 4 -> 5: finish ---- */
+function finishRace(){
+  finalizeRanks(G.states, G.orderState);
+  MASCOTS.forEach(function(m){
+    G.events[MASCOT_PT[m].toLowerCase()+"_ultimas_duas"] = G.states[m].rank>=3;
+  });
+  G.phase="finished";
+  document.getElementById("btnNext").disabled=true;
+  logLine("🏆 Corrida encerrada! Todas as colocações definidas.", "finish");
+  renderLog();
+  computePayoutsAndRender();
+  var rb=document.getElementById("btnReset");
+  if(rb) rb.textContent = (G.raceNum>=MAX_RACES) ? "↺ Novo jogo (reinicia saldos)" : "↺ Próxima corrida";
+  document.getElementById("panel-results").hidden=false;
+  document.getElementById("panel-results").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function computePayoutsAndRender(){
+  // standings
+  var order = MASCOTS.slice().sort(function(a,b){ return G.states[a].rank - G.states[b].rank; });
+  var sb = document.getElementById("standingsBody");
+  sb.innerHTML = order.map(function(m){
+    var s=G.states[m];
+    var situacao = s.status==="dq" ? "Desclassificado — "+DQ_LABEL[s.dqReason] : (s.status==="finished" ? "Cruzou a linha" : "Último por eliminação");
+    return '<tr><td><span class="rank-pill">'+s.rank+'</span></td>'+
+      '<td><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var('+MASCOT_VAR[m]+');margin-right:6px;"></span>'+MASCOT_PT[m]+'</td>'+
+      '<td style="color:var(--ink-dim); font-size:12px;">'+situacao+'</td></tr>';
+  }).join("");
+
+  // side outcome (só a aposta sorteada pra esta corrida)
+  var so=document.getElementById("sideOutcomes");
+  var sideHappened = !!G.events[G.activeSideBet.key];
+  so.innerHTML = '<div class="row"><span>'+G.activeSideBet.label+'</span><span class="'+(sideHappened?"yes":"no")+'">'+(sideHappened?"Aconteceu":"Não aconteceu")+'</span></div>';
+
+  // payouts + saldo acumulado (até 2 apostas por jogador)
+  var stubs=document.getElementById("payoutStubs");
+  var html="";
+  for(var i=0;i<G.numPlayers;i++){
+    var lines=[];
+    var total=0;
+    for(var slot=0; slot<2; slot++){
+      var bet=G.bets[i][slot];
+      if(!bet) continue;
+      var payout, what;
+      if(bet.type==="mascot"){
+        var table = bet.modo==="seguro" ? SAFE_MASCOT : RISKY_MASCOT;
+        var colo = G.states[bet.mascot].rank;
+        payout = colo<=3 ? table[bet.tier][colo-1] : 0;
+        what = MASCOT_PT[bet.mascot]+" · "+(bet.modo==="seguro"?"Seguro":"Arriscado")+" nv"+bet.tier+" · terminou em "+ordinal(colo);
+      } else {
+        var tableS = bet.modo==="seguro" ? SAFE_SIDE : RISKY_SIDE;
+        var predictedYes = bet.side==="SIM";
+        var correct = sideHappened===predictedYes;
+        var pair = tableS[bet.tier];
+        payout = correct ? pair[0] : pair[1];
+        what = G.activeSideBet.label+" · "+(bet.side==="SIM"?"SIM":"NÃO")+" · "+(bet.modo==="seguro"?"Seguro":"Arriscado")+" nv"+bet.tier+" · "+(sideHappened?"aconteceu":"não aconteceu");
+      }
+      if(G.raceNum===3 && slot===1){
+        payout *= 2;
+        what += " · bilhete em dobro (3ª corrida)";
+      }
+      total += payout;
+      lines.push({what:what, payout:payout});
+    }
+    BANKROLL[i] = (BANKROLL[i]||0) + total;
+    var betsHtml = lines.length ? lines.map(function(l){
+      var cls = l.payout>0?"pos":(l.payout<0?"neg":"");
+      return '<div class="bet-line"><span>'+l.what+'</span><span class="amt '+cls+'">'+(l.payout>0?"+":"")+l.payout+'</span></div>';
+    }).join("") : '<div class="what">sem apostas</div>';
+    var totalClass = total>0 ? "pos" : (total<0 ? "neg" : "zero");
+    html += '<div class="stub"><div style="flex:1; min-width:180px;"><div class="who">Jogador '+(i+1)+'</div>'+betsHtml+'</div>'+
+      '<div style="text-align:right;"><div class="payout '+totalClass+'">'+(total>0?"+":"")+total+'</div>'+
+      '<div style="font-size:10.5px; color:var(--ink-dim);">saldo: $'+BANKROLL[i]+'</div></div></div>';
+  }
+  stubs.innerHTML = html;
+
+  // placar geral
+  var lb=document.getElementById("leaderboard");
+  var idxs=[]; for(var j=0;j<G.numPlayers;j++) idxs.push(j);
+  idxs.sort(function(a,b){ return BANKROLL[b]-BANKROLL[a]; });
+  var medals=["🥇","🥈","🥉"];
+  lb.innerHTML = idxs.map(function(pi,rankIdx){
+    var balClass = BANKROLL[pi]>0?"pos-bal":(BANKROLL[pi]<0?"neg-bal":"");
+    return '<div class="row"><span class="pos">'+(medals[rankIdx]||(rankIdx+1)+"º")+'</span><span>Jogador '+(pi+1)+'</span><span class="bal '+balClass+'">$'+BANKROLL[pi]+'</span></div>';
+  }).join("");
+}
+
+/* ---- reset ---- */
+function resetAll(){
+  if(RACE_NUM>=MAX_RACES){
+    RACE_NUM = 1;
+    if(BANKROLL.length) BANKROLL = new Array(BANKROLL.length).fill(STARTING_MONEY);
+    SIDE_BET_QUEUE = [];
+    showToast("Fim das 3 corridas — novo jogo, saldos reiniciados em $"+STARTING_MONEY+".");
+  } else {
+    RACE_NUM++;
+  }
+  updateRaceNumTag();
+  document.getElementById("panel-open").hidden=true;
+  document.getElementById("panel-bet").hidden=true;
+  document.getElementById("panel-race").hidden=true;
+  document.getElementById("panel-results").hidden=true;
+  document.getElementById("btnPrepare").disabled=false;
+  document.getElementById("numPlayers").disabled=false;
+  document.getElementById("chkNoLateralDQ").disabled=false;
+  document.getElementById("panel-setup").scrollIntoView({behavior:"smooth", block:"nearest"});
+  G=null;
+}
+
+/* ---- wire up ---- */
+document.addEventListener("DOMContentLoaded", function(){
+  buildLegend();
+  buildNumPlayersSelect();
+  updateRaceNumTag();
+  document.getElementById("btnPrepare").addEventListener("click", prepareTable);
+  document.getElementById("btnStartRace").addEventListener("click", startRace);
+  document.getElementById("btnNext").addEventListener("click", nextCard);
+  document.getElementById("btnReset").addEventListener("click", resetAll);
+});
+})();
+</script>
