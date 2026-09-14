@@ -250,7 +250,7 @@ footer{margin-top:26px; color:var(--ink-dim); font-size:11px; text-align:center;
     <div>
       <div class="eyebrow">Dados em Jogo · simulador</div>
       <h1>Mesa de Hot Streak</h1>
-      <div class="sub">Monte a mesa, distribua as apostas e rode a corrida carta por carta — usando exatamente as mesmas regras da simulação de Monte Carlo.</div>
+      <div class="sub">Monte a mesa, distribua as apostas e rode a corrida carta por carta.</div>
     </div>
     <div class="legend" id="legend"></div>
   </div>
@@ -631,7 +631,7 @@ function buildNumPlayersSelect(){
   var sel=document.getElementById("numPlayers");
   sel.innerHTML="";
   [3,4,5,6,7,8].forEach(function(n){
-    var o=document.createElement("option"); o.value=n; o.textContent=n+(n===5?" (padrão da simulação)":"");
+    var o=document.createElement("option"); o.value=n; o.textContent=n+(n===5?"":"");
     if(n===5) o.selected=true;
     sel.appendChild(o);
   });
